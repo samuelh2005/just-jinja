@@ -1,11 +1,44 @@
+# Just Jinja - a simple static site generator using Jinja2 templates
+# 
+# This project is free and open source software, licensed under the MIT License.
+# You should have received a copy of the MIT License along with this project. If not, see <https://github.com/samuelh2005/just-jinja/blob/main/LICENSE>.
+# 
+# Copyright (c) 2026 Samuel Hulme.
+#
+# The above copyright notice shall be included in all copies or substantial portions of the Software.
+
 from jinja2 import Environment, FileSystemLoader
 from pathlib import Path
 from yaml import safe_load
+import argparse
 
-PAGES_DIR = Path("pages")
-TEMPLATES_DIR = Path("templates")
-DIST_DIR = Path("dist")
-CONFIG_PATH = Path("site.yaml")
+__version__ = "0.1.0"
+__copyright__ = "Copyright (c) 2026 Samuel Hulme. MIT License."
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-i", "--site-dir", type=Path, default=Path("."), help="Path to the site directory (default: current directory)")
+parser.add_argument("-o", "--output-dir", type=Path, default=Path("dist"), help="Path to the output directory (default: dist)")
+parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__} {__copyright__}")
+args = parser.parse_args()
+
+SITE_DIR = args.site_dir
+
+# Check if the site directory exists
+if not SITE_DIR.exists():
+    print(f"Error: Site directory '{SITE_DIR}' does not exist. See '{parser.prog} --help' for usage.")
+    exit(1)
+
+PAGES_DIR = SITE_DIR.resolve() / "pages"
+TEMPLATES_DIR = SITE_DIR.resolve() / "templates"
+CONFIG_PATH = SITE_DIR.resolve() / "site.yaml"
+
+# Check if config file exists
+
+if not CONFIG_PATH.exists():
+    print(f"Error: Config file '{CONFIG_PATH}' does not exist. See '{parser.prog} --help' for usage.")
+    exit(1)
+
+DIST_DIR = args.output_dir
 
 env = Environment(
     loader=FileSystemLoader([
