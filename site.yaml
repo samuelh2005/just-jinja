@@ -1,0 +1,11 @@
+siteName: Miners Online
+navigation:
+  - title: Home
+    url: /
+    icon: bi bi-house
+  - title: News
+    url: /news
+    icon: bi bi-newspaper
+  - title: Wiki
+    url: /wiki
+    icon: bi bi-book
