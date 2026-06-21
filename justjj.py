@@ -11,6 +11,7 @@ from jinja2 import Environment, FileSystemLoader
 from pathlib import Path
 from yaml import safe_load
 import argparse
+import datetime
 
 __version__ = "0.1.0"
 __copyright__ = "Copyright (c) 2026 Samuel Hulme. MIT License."
@@ -52,6 +53,8 @@ with open(CONFIG_PATH, "r", encoding="utf-8") as f:
 
 DIST_DIR.mkdir(exist_ok=True)
 
+BUILD_TIME = datetime.datetime.now()
+
 
 def page_url(path: Path) -> str:
     """
@@ -92,7 +95,8 @@ def render_page(page_path: Path):
 
     html = template.render(
         config=config,
-        current_url=current_url
+        current_url=current_url,
+        build_time=BUILD_TIME
     )
 
     out_path = output_path_for(page_path)
