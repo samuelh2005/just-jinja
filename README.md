@@ -5,8 +5,11 @@ Just Jinja is a simple static site generator built on top of Jinja2.
 ## Requirements
 
 - Python 3.7 or higher
-- Jinja2 `pip install jinja2`
-- PyYAML `pip install pyyaml`
+- Jinja2 `pip install jinja2` for template rendering
+- PyYAML `pip install pyyaml` for YAML parsing
+- Wenmode: `pip install wenmode` for Markdown parsing
+
+All dependencies are required to run Just Jinja, and none are optional.
 
 ## Usage
 
