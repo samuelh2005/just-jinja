@@ -117,7 +117,7 @@ def html_processor(path: Path, yaml: Path | None):
         with open(yaml, "r", encoding="utf-8") as f:
             page_data = safe_load(f)
     else:
-        page_data = None    
+        page_data = None
 
     current_url = page_url(path)
 
@@ -306,35 +306,6 @@ class OtherRule(Rule):
 
 
 # ============================================================
-# Indexer
-# ============================================================
-
-class FileIndexer:
-    def __init__(self, roots: List[Path]):
-        self.roots = roots
-
-    def build(self) -> Dict[Path, FileGroup]:
-        groups = {}
-
-        for path in self.roots:
-            for file_path in path.rglob("*"):
-                if not file_path.is_file():
-                    continue
-
-                # site/index.html
-                # -> site/index
-
-                identity = file_path.with_suffix("")
-
-                if identity not in groups:
-                    groups[identity] = {}
-
-                groups[identity][file_path.suffix.lower()] = file_path
-
-        return groups
-
-
-# ============================================================
 # Router
 # ============================================================
 
@@ -347,14 +318,32 @@ class Router:
         )
 
     def run(self):
-        for rule in self.rules:
-            index = FileIndexer(
-                roots=rule.roots
-            ).build()
+        all_roots: List[Path] = []
+        for r in self.rules:
+            for root in r.roots:
+                if root not in all_roots:
+                    all_roots.append(root)
 
-            for group in index.values():
+        groups: Dict[Path, FileGroup] = {}
+
+        for root in all_roots:
+            for file_path in root.rglob("*"):
+                if not file_path.is_file():
+                    continue
+
+                identity = file_path.with_suffix("")
+
+                if identity not in groups:
+                    groups[identity] = {}
+
+                groups[identity][file_path.suffix.lower()] = file_path
+
+        # Execute rules (single pass, first match wins)
+        for group in groups.values():
+            for rule in self.rules:
                 if rule.matches(group):
                     rule.process(group)
+                    break
 
 
 # ============================================================
